@@ -548,3 +548,20 @@ h2, h3 { letter-spacing: -.025em; }
     justify-self: start;
   }
 }
+
+.order-row { grid-template-columns: 1.1fr 1.3fr .75fr .75fr .75fr; }
+.order-row > div { min-width: 0; }
+.order-row .status-pill { width: max-content; }
+.order-status-cancelled, .order-status-returned, .order-status-refunded { color: #ffb0b0; }
+.order-status-delivered, .payment-paid { color: var(--success); border-color: rgba(80,220,145,.17); }
+.payment-failed, .payment-refunded, .payment-partially_refunded { color: #ffb0b0; }
+@media (max-width: 940px) {
+  .order-row { grid-template-columns: 1fr 1.1fr .75fr .8fr .8fr; }
+}
+@media (max-width: 760px) {
+  .order-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .order-row > div:first-child { grid-column: auto; }
+  .order-row .status-pill { justify-self: start; }
+}
