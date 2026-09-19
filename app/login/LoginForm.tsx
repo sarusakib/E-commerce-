@@ -8,7 +8,7 @@ type Mode = "signin" | "signup" | "reset";
 
 const EMAIL_KEY = "ecommerce-premium.login.email";
 
-export default function LoginForm() {
+export default function LoginForm({ initialError = "" }: { initialError?: string }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -17,14 +17,14 @@ export default function LoginForm() {
   const [rememberEmail, setRememberEmail] = useState(true);
   const [busy, setBusy] = useState<"email" | "google" | "facebook" | null>(null);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialError);
 
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(EMAIL_KEY);
       if (saved) setEmail(saved);
     } catch {
-      // Storage can be blocked by privacy settings; auth still works.
+      // Device storage is optional; authentication must still work.
     }
   }, []);
 
@@ -51,10 +51,9 @@ export default function LoginForm() {
 
       if (mode === "reset") {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-          redirectTo: `${window.location.origin}/auth/update-password`,
+          redirectTo: window.location.origin + "/auth/update-password",
         });
         if (resetError) throw resetError;
-
         setMessage("If an account exists for that email, a password-reset link has been sent.");
         return;
       }
@@ -64,10 +63,14 @@ export default function LoginForm() {
         return;
       }
 
-      if (rememberEmail) {
-        window.localStorage.setItem(EMAIL_KEY, cleanEmail);
-      } else {
-        window.localStorage.removeItem(EMAIL_KEY);
+      try {
+        if (rememberEmail) {
+          window.localStorage.setItem(EMAIL_KEY, cleanEmail);
+        } else {
+          window.localStorage.removeItem(EMAIL_KEY);
+        }
+      } catch {
+        // Never block a valid sign-in because local storage is unavailable.
       }
 
       if (mode === "signup") {
@@ -78,7 +81,7 @@ export default function LoginForm() {
             data: {
               display_name: name.trim() || undefined,
             },
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+            emailRedirectTo: window.location.origin + "/auth/callback?next=/dashboard",
           },
         });
         if (signUpError) throw signUpError;
@@ -117,7 +120,7 @@ export default function LoginForm() {
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          redirectTo: window.location.origin + "/auth/callback?next=/dashboard",
         },
       });
 
@@ -154,9 +157,7 @@ export default function LoginForm() {
       <div className="auth-heading">
         <div className="kicker">Secure account access</div>
         <h1>{heading}</h1>
-        <p>
-          One account can manage multiple independent stores without mixing seller data.
-        </p>
+        <p>One account can manage multiple independent stores without mixing seller data.</p>
       </div>
 
       {mode !== "reset" && (
@@ -178,55 +179,25 @@ export default function LoginForm() {
         {mode === "signup" && (
           <label>
             <span>Your name</span>
-            <input
-              name="name"
-              autoComplete="name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Your name"
-              maxLength={80}
-            />
+            <input name="name" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Your name" maxLength={80} />
           </label>
         )}
 
         <label>
           <span>Email address</span>
-          <input
-            name="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="you@example.com"
-            maxLength={254}
-            required
-          />
+          <input name="email" type="email" autoComplete="email" inputMode="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" maxLength={254} required />
         </label>
 
         {mode !== "reset" && (
           <label>
             <span>Password</span>
-            <input
-              name="password"
-              type="password"
-              autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="••••••••"
-              minLength={8}
-              required
-            />
+            <input name="password" type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" minLength={8} required />
           </label>
         )}
 
         {mode !== "reset" && (
           <label className="check-row">
-            <input
-              type="checkbox"
-              checked={rememberEmail}
-              onChange={(event) => setRememberEmail(event.target.checked)}
-            />
+            <input type="checkbox" checked={rememberEmail} onChange={(event) => setRememberEmail(event.target.checked)} />
             <span>Remember my email on this device</span>
           </label>
         )}
@@ -236,7 +207,7 @@ export default function LoginForm() {
         </button>
       </form>
 
-      {error && <div className="alert error" role="alert">{error}</div>}
+      {error && <div className="alert error" role="alert">{error.replaceAll("-", " ")}</div>}
       {message && <div className="alert success" role="status">{message}</div>}
 
       <div className="auth-links">
@@ -255,7 +226,7 @@ export default function LoginForm() {
       </div>
 
       <p className="auth-footnote">
-        Your password is never stored in browser storage. Email/password and OAuth sessions are handled by Supabase Auth.
+        Your password is never stored in browser storage. Supabase Auth manages email/password and OAuth sessions.
       </p>
     </div>
   );
