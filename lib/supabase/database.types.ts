@@ -78,6 +78,53 @@ export type Database = {
           },
         ]
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -1404,6 +1451,119 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          endpoint_id: string
+          event_id: string | null
+          event_type: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          response_status: number | null
+          status: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          endpoint_id: string
+          event_id?: string | null
+          event_type: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          response_status?: number | null
+          status?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          endpoint_id?: string
+          event_id?: string | null
+          event_type?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          response_status?: number | null
+          status?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_deliveries_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_endpoints: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string
+          events: string[]
+          id: string
+          last_delivery_at: string | null
+          secret_encrypted: string | null
+          secret_key_version: number
+          store_id: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by: string
+          events?: string[]
+          id?: string
+          last_delivery_at?: string | null
+          secret_encrypted?: string | null
+          secret_key_version?: number
+          store_id: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string
+          events?: string[]
+          id?: string
+          last_delivery_at?: string | null
+          secret_encrypted?: string | null
+          secret_key_version?: number
+          store_id?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_endpoints_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
