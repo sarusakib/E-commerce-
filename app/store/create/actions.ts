@@ -43,6 +43,7 @@ export async function createStoreAction(
   const currency = String(formData.get("currency") ?? "USD").toUpperCase();
   const locale = String(formData.get("locale") ?? "en").toLowerCase();
   const timezone = String(formData.get("timezone") ?? "UTC");
+  const countryCode = String(formData.get("country_code") ?? "BD").toUpperCase();
 
   if (name.length < 2 || name.length > 80) {
     return { error: "Store name must be between 2 and 80 characters." };
@@ -60,6 +61,10 @@ export async function createStoreAction(
     return { error: "Choose a valid store language." };
   }
 
+  if (!/^[A-Z]{2}$/.test(countryCode)) {
+    return { error: "Choose a valid 2-letter country code." };
+  }
+
   const { data: store, error: storeError } = await supabase
     .from("stores")
     .insert({
@@ -69,6 +74,7 @@ export async function createStoreAction(
       default_currency: currency,
       locale,
       timezone,
+      country_code: countryCode,
       description: "",
     })
     .select("id, slug")
