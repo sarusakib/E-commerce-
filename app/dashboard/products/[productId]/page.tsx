@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import ProductForm from "../ProductForm";
+import ProductMediaManager from "./ProductMediaManager";
 import { updateProductAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export default async function EditProductPage({
 
   const { data: product } = await supabase
     .from("products")
-    .select("id,store_id,name,slug,description,brand,category,sku,currency,price,compare_at_price,stock,status,featured,seo_title,seo_description")
+    .select("id,store_id,name,slug,description,brand,category,sku,currency,price,compare_at_price,stock,status,featured,primary_image_url,seo_title,seo_description")
     .eq("id", productId)
     .maybeSingle();
 
@@ -55,6 +56,12 @@ export default async function EditProductPage({
           storeCurrency={store.default_currency}
           product={product}
           action={updateProductAction}
+        />
+
+        <ProductMediaManager
+          storeId={store.id}
+          productId={product.id}
+          currentPrimary={product.primary_image_url}
         />
       </div>
     </main>
