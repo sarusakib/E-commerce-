@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from "react";
-import type { ProductActionState } from "./actions";
+import type { ProductActionState } from "./types";
 
 type Product = {
   id?: string;
