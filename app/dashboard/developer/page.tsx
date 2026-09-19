@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createApiKey, revokeApiKey } from "./actions";
 import ApiKeyForm from "./ApiKeyForm";
+import WebhookForm from "./webhooks/WebhookForm";
+import { disableWebhookEndpoint } from "./webhooks/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -86,32 +88,15 @@ export default async function DeveloperPage({
               <ApiKeyForm storeId={selected!.id} />
             </section>
 
-            <section className="developer-list">
-              <h2>API keys</h2>
-              {(keys ?? []).map((key) => (
-                <article className="developer-card" key={key.id}>
-                  <div>
-                    <strong>{key.name}</strong>
-                    <small>{key.key_prefix}… · {key.scopes.join(", ")} · created {new Date(key.created_at).toLocaleDateString()}</small>
-                  </div>
-                  {key.revoked_at ? (
-                    <span className="status-pill">revoked</span>
-                  ) : (
-                    <form action={revokeApiKey}>
-                      <input type="hidden" name="key_id" value={key.id} />
-                      <input type="hidden" name="store_id" value={selected!.id} />
-                      <button className="button danger-button" type="submit">Revoke</button>
-                    </form>
-                  )}
-                </article>
-              ))}
-              {!keys?.length && <p className="checkout-note">No API keys yet.</p>}
+            <section className="store-form">
+              <div className="form-section-title">Create webhook endpoint</div>
+              <WebhookForm storeId={selected!.id} />
             </section>
 
             <section className="developer-list">
               <div className="developer-list-head">
                 <h2>Webhook endpoints</h2>
-                <span>Queue is ready for async delivery workers.</span>
+                <span>Events are queued transactionally for async delivery.</span>
               </div>
               {(endpoints ?? []).map((endpoint) => (
                 <article className="developer-card" key={endpoint.id}>
@@ -119,11 +104,19 @@ export default async function DeveloperPage({
                     <strong>{endpoint.url}</strong>
                     <small>{endpoint.active ? "Active" : "Disabled"} · events: {endpoint.events.join(", ")}</small>
                   </div>
-                  <span className={endpoint.active ? "status-pill status-active" : "status-pill"}>{endpoint.active ? "active" : "inactive"}</span>
+                  {endpoint.active ? (
+                    <form action={disableWebhookEndpoint}>
+                      <input type="hidden" name="endpoint_id" value={endpoint.id} />
+                      <input type="hidden" name="store_id" value={selected!.id} />
+                      <button className="button danger-button" type="submit">Disable</button>
+                    </form>
+                  ) : (
+                    <span className="status-pill">inactive</span>
+                  )}
                 </article>
               ))}
               {!endpoints?.length && <p className="checkout-note">No webhook endpoints yet.</p>}
-            </section>
+            </section>            </section>
           </>
         )}
       </div>
