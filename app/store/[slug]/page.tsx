@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -14,14 +15,39 @@ export default async function StorePage({ params }: Props) {
   const { slug } = await params;
   const supabase = createPublicClient();
 
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id,name,slug,status,default_currency,locale,timezone,description,logo_url,cover_image_url,country_code")
-    .eq("slug", slug.toLowerCase())
-    .eq("status", "active")
-    .maybeSingle();
+  const [{ data: store }, { data: publicSettings }] = await Promise.all([
+    supabase
+      .from("stores")
+      .select("id,name,slug,status,default_currency,locale,timezone,description,logo_url,cover_image_url,country_code")
+      .eq("slug", slug.toLowerCase())
+      .eq("status", "active")
+      .maybeSingle(),
+    supabase
+      .from("store_public_settings")
+      .select("theme,homepage,announcement")
+      .maybeSingle(),
+  ]);
 
   if (!store) notFound();
+
+  const theme = publicSettings?.theme && typeof publicSettings.theme === "object"
+    ? publicSettings.theme as Record<string, unknown>
+    : {};
+  const homepage = publicSettings?.homepage && typeof publicSettings.homepage === "object"
+    ? publicSettings.homepage as Record<string, unknown>
+    : {};
+  const sections = Array.isArray(homepage.sections)
+    ? homepage.sections.filter((value): value is string => typeof value === "string")
+    : ["hero", "featured_products", "about", "faq"];
+  const accent = typeof theme.accent === "string" && /^#[0-9a-f]{6}$/i.test(theme.accent)
+    ? theme.accent
+    : "#73edff";
+  const heroTitle = typeof homepage.hero_title === "string" && homepage.hero_title.trim()
+    ? homepage.hero_title
+    : store.name;
+  const heroSubtitle = typeof homepage.hero_subtitle === "string" && homepage.hero_subtitle.trim()
+    ? homepage.hero_subtitle
+    : "A premium independent store, powered by E-Commerce Premium.";
 
   const { data: products } = await supabase
     .from("products")
@@ -33,7 +59,7 @@ export default async function StorePage({ params }: Props) {
     .limit(24);
 
   return (
-    <main className="storefront-shell">
+    <main className="storefront-shell" style={{ "--store-accent": accent } as CSSProperties}>
       <header className="store-header">
         <div className="page store-header-inner">
           <Link href="/" className="brand">
@@ -47,16 +73,25 @@ export default async function StorePage({ params }: Props) {
         </div>
       </header>
 
-      <section className="store-hero">
-        <div className="store-hero-glow" aria-hidden="true" />
-        <div className="page">
-          <div className="kicker">Independent storefront</div>
-          <h1>{store.name}</h1>
-          <p className="lead">{store.description || "A premium independent store, powered by E-Commerce Premium."}</p>
-          <div className="store-url">{getStoreUrl(store.slug)}</div>
+      {publicSettings?.announcement && (
+        <div className="store-announcement">
+          <div className="page">{publicSettings.announcement}</div>
         </div>
-      </section>
+      )}
 
+      {sections.includes("hero") && (
+        <section className="store-hero">
+          <div className="store-hero-glow" aria-hidden="true" />
+          <div className="page">
+            <div className="kicker">Independent storefront</div>
+            <h1>{heroTitle}</h1>
+            <p className="lead">{heroSubtitle}</p>
+            <div className="store-url">{getStoreUrl(store.slug)}</div>
+          </div>
+        </section>
+      )}
+
+      {sections.includes("featured_products") && (
       <section className="page product-section">
         <div className="section-heading">
           <div>
@@ -106,6 +141,36 @@ export default async function StorePage({ params }: Props) {
           </div>
         )}
       </section>
+      )}
+
+      {sections.includes("about") && (
+        <section className="page store-content-section">
+          <div className="content-card">
+            <div className="kicker">About this store</div>
+            <h2>{store.name}</h2>
+            <p>{store.description || "This independent storefront is built and managed by its seller."}</p>
+          </div>
+        </section>
+      )}
+
+      {sections.includes("faq") && (
+        <section className="page store-content-section">
+          <div className="content-card">
+            <div className="kicker">FAQ</div>
+            <h2>Need help?</h2>
+            <div className="faq-list">
+              <details>
+                <summary>How do I place an order?</summary>
+                <p>Open a product, add it to the store cart and continue through checkout.</p>
+              </details>
+              <details>
+                <summary>Which payment method is available?</summary>
+                <p>This storefront currently supports cash on delivery where enabled by the store.</p>
+              </details>
+            </div>
+          </div>
+        </section>
+      )}
 
       <footer className="footer store-footer">
         <span>{store.name}</span>
