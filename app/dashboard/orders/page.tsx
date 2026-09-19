@@ -97,7 +97,7 @@ export default async function OrdersDashboardPage({
                 {orders.map((order) => (
                   <div className="admin-product-row order-row" key={order.id}>
                     <div>
-                      <strong>#{order.order_number}</strong>
+                      <Link href={"/dashboard/orders/" + order.id}><strong>#{order.order_number}</strong></Link>
                       <small>{new Date(order.created_at).toLocaleString()}</small>
                     </div>
                     <div>
