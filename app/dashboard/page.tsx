@@ -64,6 +64,7 @@ export default async function DashboardPage() {
                   <Link href={"/store/" + store.slug} className="button">Open store</Link>
                   <Link href={"/dashboard/orders?store=" + store.id} className="button">Orders</Link>
                   <Link href={"/dashboard/products?store=" + store.id} className="button">Catalog</Link>
+                  <Link href={"/dashboard/stores/" + store.id + "/builder"} className="button">Builder</Link>
                 </div>
               </article>
             ))}
