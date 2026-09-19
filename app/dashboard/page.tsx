@@ -52,7 +52,7 @@ export default async function DashboardPage() {
             {stores.map((store) => (
               <article className="store-card" key={store.id}>
                 <div className="store-card-top">
-                  <span className={`status-pill status-${store.status}`}>{store.status}</span>
+                  <span className={"status-pill status-" + store.status}>{store.status}</span>
                   <span>{store.default_currency}</span>
                 </div>
                 <h2>{store.name}</h2>
@@ -61,8 +61,8 @@ export default async function DashboardPage() {
                   https://{store.slug}.{process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommerce-premium.vercel.app"}
                 </div>
                 <div className="actions">
-                  <Link href={`/store/${store.slug}`} className="button">View store</Link>
-                  <Link href={`/store/${store.slug}/products`} className="button">Manage products</Link>
+                  <Link href={"/store/" + store.slug} className="button">Open store</Link>
+                  <Link href={"/store/" + store.slug + "/products"} className="button">Open catalog</Link>
                 </div>
               </article>
             ))}
