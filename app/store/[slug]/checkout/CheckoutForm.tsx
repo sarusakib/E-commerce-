@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 
 type CartItem = {
   productId: string;
+  variantId: string | null;
   name: string;
   slug: string;
   price: number;
