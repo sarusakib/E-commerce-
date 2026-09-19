@@ -16,15 +16,11 @@ export async function GET(request: Request) {
   }
 
   const supabase = await createClient();
-  const flowId = url.searchParams.get("sb_flow_id");
-  const { error } = await supabase.auth.exchangeCodeForSession(
-    code,
-    flowId ? { flowId } : undefined,
-  );
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     return NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent("Authentication could not be completed.")}`, url.origin),
+      new URL("/login?error=authentication-failed", url.origin),
     );
   }
 
