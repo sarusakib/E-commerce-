@@ -5,8 +5,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { TeamInviteState } from "./types";
+import type { Database } from "@/lib/supabase/database.types";
 
-const ROLES = new Set(["admin", "manager", "product_manager", "order_manager", "staff"]);
+type TeamInviteRole = Exclude<Database["public"]["Enums"]["store_member_role"], "owner">;
+const ROLES = new Set<TeamInviteRole>([
+  "admin",
+  "manager",
+  "product_manager",
+  "order_manager",
+  "staff",
+]);
+
+function isTeamInviteRole(value: string): value is TeamInviteRole {
+  return ROLES.has(value as TeamInviteRole);
+}
 
 function text(formData: FormData, key: string, max: number) {
   return String(formData.get(key) ?? "").trim().slice(0, max);
@@ -27,7 +39,7 @@ export async function createTeamInvite(
   if (!storeId || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: "Enter a valid invitation email." };
   }
-  if (!ROLES.has(role)) return { error: "Choose a valid team role." };
+  if (!isTeamInviteRole(role)) return { error: "Choose a valid team role." };
 
   const token = randomBytes(48).toString("base64url");
   const tokenHash = createHash("sha256").update(token).digest("hex");
