@@ -24,6 +24,7 @@ drop policy if exists "stores_update_owner" on public.stores;
 drop policy if exists "stores_delete_owner" on public.stores;
 
 drop policy if exists "store_members_select_member_or_owner" on public.store_members;
+drop policy if exists "store_members_select" on public.store_members;
 drop policy if exists "store_members_insert_owner" on public.store_members;
 drop policy if exists "store_members_update_owner" on public.store_members;
 drop policy if exists "store_members_delete_owner" on public.store_members;
@@ -32,6 +33,7 @@ drop policy if exists "products_select_member" on public.products;
 drop policy if exists "products_insert_member" on public.products;
 drop policy if exists "products_update_member" on public.products;
 drop policy if exists "products_delete_owner_admin" on public.products;
+drop policy if exists "products_delete_admin" on public.products;
 
 alter table public.stores drop constraint if exists stores_owner_id_fkey;
 alter table public.stores drop column if exists owner_id;
