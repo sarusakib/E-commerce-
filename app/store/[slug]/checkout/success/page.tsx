@@ -22,6 +22,8 @@ async function getConfirmation(token: string) {
     order_number?: string;
     status?: string;
     payment_status?: string;
+    discount_total?: number;
+    coupon_code?: string | null;
     currency?: string;
     grand_total?: number;
     customer_email?: string;
@@ -82,9 +84,10 @@ export default async function CheckoutSuccessPage({
                 <span>{confirmation.currency} {Number(item.line_total).toFixed(2)}</span>
               </div>
             ))}
-            <div className="cart-total-row">
-              <span>Total</span>
-              <strong>{confirmation.currency} {Number(confirmation.grand_total).toFixed(2)}</strong>
+            <div className="success-totals">
+              <div><span>Discount</span><strong>- {confirmation.currency} {Number(confirmation.discount_total ?? 0).toFixed(2)}</strong></div>
+              <div className="cart-total-row"><span>Total</span><strong>{confirmation.currency} {Number(confirmation.grand_total).toFixed(2)}</strong></div>
+              {confirmation.coupon_code && <small>Coupon: {confirmation.coupon_code}</small>}
             </div>
           </div>
 
