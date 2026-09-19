@@ -43,6 +43,7 @@ export default function CheckoutForm({
   const [line1, setLine1] = useState("");
   const [line2, setLine2] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => {
     try {
@@ -55,6 +56,15 @@ export default function CheckoutForm({
       setLoaded(true);
     }
   }, [storeSlug]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setEmail(data.user.email);
+      const metadata = data.user?.user_metadata as { display_name?: string } | undefined;
+      if (metadata?.display_name && !firstName) setFirstName(metadata.display_name.split(" ")[0] ?? "");
+    });
+  }, [firstName]);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0),
@@ -104,6 +114,7 @@ export default function CheckoutForm({
             line2: line2.trim(),
             postal_code: postalCode.trim(),
           },
+          coupon_code: couponCode.trim() || null,
           billing_address: {
             country_code: countryCode,
             state: state.trim(),
@@ -215,6 +226,12 @@ export default function CheckoutForm({
         <label>
           <span>Address line 2</span>
           <input value={line2} onChange={(event) => setLine2(event.target.value)} maxLength={180} autoComplete="address-line2" />
+        </label>
+
+        <div className="form-section-title">Discount code</div>
+        <label>
+          <span>Coupon code</span>
+          <input value={couponCode} onChange={(event) => setCouponCode(event.target.value)} maxLength={40} placeholder="WELCOME10" autoCapitalize="characters" />
         </label>
 
         <div className="form-section-title">Payment method</div>
