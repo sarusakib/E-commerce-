@@ -14,6 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
+      product_images: {
+        Row: {
+          alt_text: string
+          created_at: string
+          height: number | null
+          id: string
+          is_primary: boolean
+          product_id: string
+          public_url: string | null
+          sort_order: number
+          storage_path: string | null
+          store_id: string
+          updated_at: string
+          width: number | null
+        }
+        Insert: {
+          alt_text?: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_primary?: boolean
+          product_id: string
+          public_url?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          store_id: string
+          updated_at?: string
+          width?: number | null
+        }
+        Update: {
+          alt_text?: string
+          created_at?: string
+          height?: number | null
+          id?: string
+          is_primary?: boolean
+          product_id?: string
+          public_url?: string | null
+          sort_order?: number
+          storage_path?: string | null
+          store_id?: string
+          updated_at?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_store_fk"
+            columns: ["store_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "product_images_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          barcode: string | null
+          compare_at_price: number | null
+          created_at: string
+          id: string
+          image_url: string | null
+          option_values: Json
+          price: number
+          product_id: string
+          sku: string | null
+          sort_order: number
+          stock: number
+          store_id: string
+          title: string
+          updated_at: string
+          weight_grams: number | null
+        }
+        Insert: {
+          barcode?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          option_values?: Json
+          price: number
+          product_id: string
+          sku?: string | null
+          sort_order?: number
+          stock?: number
+          store_id: string
+          title: string
+          updated_at?: string
+          weight_grams?: number | null
+        }
+        Update: {
+          barcode?: string | null
+          compare_at_price?: number | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          option_values?: Json
+          price?: number
+          product_id?: string
+          sku?: string | null
+          sort_order?: number
+          stock?: number
+          store_id?: string
+          title?: string
+          updated_at?: string
+          weight_grams?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_store_fk"
+            columns: ["store_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "product_variants_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: string | null
