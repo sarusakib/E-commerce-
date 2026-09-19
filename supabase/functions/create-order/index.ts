@@ -114,6 +114,7 @@ Deno.serve(async (request) => {
     const items = Array.isArray(body.items) ? body.items : null;
     const shipping = body.shipping_address && typeof body.shipping_address === 'object' ? body.shipping_address : null;
     const billing = body.billing_address && typeof body.billing_address === 'object' ? body.billing_address : {};
+    const couponCode = typeof body.coupon_code === 'string' ? body.coupon_code.trim() : '';
 
     if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(storeSlug)) return json({ error: 'Invalid store.' }, 400);
 
@@ -156,6 +157,7 @@ Deno.serve(async (request) => {
       p_items: sanitizedItems,
       p_shipping_address: shipping,
       p_billing_address: billing,
+      p_coupon_code: couponCode || null,
     });
 
     if (error) throw error;
