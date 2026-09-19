@@ -8,6 +8,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const initialError = typeof params.error === "string" ? params.error : "";
+  const initialNext = typeof params.next === "string" ? params.next : "/dashboard";
 
   return (
     <main className="shell auth-shell">
@@ -19,7 +20,7 @@ export default async function LoginPage({
           </Link>
           <Link href="/" className="button">Home</Link>
         </header>
-        <LoginForm initialError={initialError} />
+        <LoginForm initialError={initialError} initialNext={initialNext} />
       </div>
     </main>
   );
