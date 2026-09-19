@@ -126,7 +126,7 @@ begin
       'order_number', v_order_number,
       'confirmation_token', v_confirmation_token,
       'currency', v_currency,
-      'grand_total', v_subtotal
+      'grand_total', v_subtotal + v_shipping_total + case when v_tax_inclusive then 0 else v_tax_total end
     );
   end if;
 
