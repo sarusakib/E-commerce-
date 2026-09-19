@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: Props) {
             <span>{store.name}</span>
           </Link>
           <div className="nav-actions">
-            <ShareProduct title={product.name} url={canonical} />
+            <Link href={getStoreUrl(store.slug) + "/cart"} className="button">Cart</Link>
             <Link href={getStoreUrl(store.slug)} className="button">Store</Link>
           </div>
         </header>
