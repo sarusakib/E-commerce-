@@ -1,21 +1,25 @@
 import Link from "next/link";
+import LoginForm from "./LoginForm";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  const initialError = typeof params.error === "string" ? params.error : "";
+
   return (
-    <main className="shell">
-      <div className="page">
+    <main className="shell auth-shell">
+      <div className="page auth-page">
         <header className="nav">
-          <Link href="/" className="brand">E-COMMERCE <span>PREMIUM</span></Link>
+          <Link href="/" className="brand">
+            <span className="brand-mark">EP</span>
+            <span>E-COMMERCE <b>PREMIUM</b></span>
+          </Link>
           <Link href="/" className="button">Home</Link>
         </header>
-        <section className="hero">
-          <div className="kicker">Secure account access</div>
-          <h1>Sign in to your <em>commerce OS.</em></h1>
-          <p className="lead">
-            Authentication is wired for Supabase SSR cookies; the next step is enabling
-            email/password and OAuth against the dedicated E-Commerce project.
-          </p>
-        </section>
+        <LoginForm initialError={initialError} />
       </div>
     </main>
   );
