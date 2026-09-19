@@ -565,3 +565,97 @@ h2, h3 { letter-spacing: -.025em; }
   .order-row > div:first-child { grid-column: auto; }
   .order-row .status-pill { justify-self: start; }
 }
+
+.order-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.detail-stack {
+  display: grid;
+  gap: 13px;
+  margin-top: 18px;
+}
+.detail-stack div {
+  display: grid;
+  gap: 4px;
+}
+.detail-stack span {
+  color: #6f7b8c;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+.detail-stack strong {
+  color: #dbe3ee;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.order-items-panel { margin-bottom: 14px; }
+.order-items {
+  display: grid;
+  gap: 0;
+  margin-top: 12px;
+}
+.order-item-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) .8fr .8fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  align-items: center;
+}
+.order-item-row:first-child { border-top: 0; }
+.order-item-row > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+.order-item-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.order-item-row small { color: #6e7a8c; font-size: 10px; }
+.order-summary-detail {
+  max-width: 460px;
+  margin-left: auto;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,.025);
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.order-summary-detail > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #98a4b6;
+  font-size: 12px;
+}
+.order-summary-detail .grand {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  color: var(--text);
+}
+.order-summary-detail .grand strong { font-size: 20px; color: var(--cyan); }
+.timeline { display: grid; gap: 0; margin-top: 10px; }
+.timeline-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+.timeline-row span { color: #6e7a8c; }
+.timeline-row strong { color: #bdc8d7; }
+@media (max-width: 760px) {
+  .order-detail-grid { grid-template-columns: 1fr; }
+  .order-item-row { grid-template-columns: 1fr auto; }
+  .order-item-row > div { grid-column: 1 / -1; }
+  .order-item-row > span:last-child { text-align: right; }
+}
