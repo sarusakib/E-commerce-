@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getStoreUrl } from "@/lib/urls";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ type Props = {
 
 export default async function StorePage({ params }: Props) {
   const { slug } = await params;
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: store } = await supabase
     .from("stores")
