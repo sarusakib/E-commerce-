@@ -35,7 +35,7 @@ async function getProduct(slug: string, productSlug: string) {
 
   if (!product) return null;
 
-  const [{ data: variants }, { data: media }] = await Promise.all([
+  const [{ data: variants }, { data: media }, { data: reviews }] = await Promise.all([
     supabase
       .from("product_variants")
       .select("id,title,price,stock,sku,image_url")
@@ -48,9 +48,17 @@ async function getProduct(slug: string, productSlug: string) {
       .eq("store_id", store.id)
       .eq("product_id", product.id)
       .order("sort_order", { ascending: true }),
+    supabase
+      .from("product_reviews")
+      .select("id,rating,title,body,verified_purchase,seller_response,created_at")
+      .eq("store_id", store.id)
+      .eq("product_id", product.id)
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .limit(20),
   ]);
 
-  return { store, product, variants: variants ?? [], media: media ?? [] };
+  return { store, product, variants: variants ?? [], media: media ?? [], reviews: reviews ?? [] };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -180,6 +188,35 @@ export default async function ProductPage({ params }: Props) {
               <ShareProduct title={product.name} />
             </div>
             <p className="share-note">Canonical product link ready for social previews and direct sharing.</p>
+          </div>
+        </section>
+
+        <section className="page reviews-section">
+          <div className="section-heading">
+            <div>
+              <div className="kicker">Customer voice</div>
+              <h2>Reviews</h2>
+            </div>
+            <span>{result.reviews.length} published</span>
+          </div>
+          <div className="review-list public-review-list">
+            {result.reviews.map((review) => (
+              <article className="review-card" key={review.id}>
+                <div className="review-head">
+                  <h3>{"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}</h3>
+                  {review.verified_purchase && <span className="verified-badge">Verified purchase</span>}
+                </div>
+                {review.title && <h3>{review.title}</h3>}
+                <p>{review.body}</p>
+                {review.seller_response && (
+                  <div className="seller-response">
+                    <span>Seller response</span>
+                    <p>{review.seller_response}</p>
+                  </div>
+                )}
+              </article>
+            ))}
+            {!result.reviews.length && <div className="empty-card"><p>No published reviews yet.</p></div>}
           </div>
         </section>
 
