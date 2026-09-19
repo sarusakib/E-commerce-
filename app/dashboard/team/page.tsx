@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createTeamInvite, revokeTeamInvite } from "./actions";
+import { revokeTeamInvite } from "./actions";
+import TeamInviteForm from "./TeamInviteForm";
 
 export const dynamic = "force-dynamic";
 
@@ -81,23 +82,7 @@ export default async function TeamPage({
 
             <section className="store-form">
               <div className="form-section-title">Invite someone to {selected?.name}</div>
-              <form action={createTeamInvite} className="auth-form">
-                <input type="hidden" name="store_id" value={selected!.id} />
-                <div className="form-grid">
-                  <label><span>Email</span><input type="email" name="email" maxLength={254} required /></label>
-                  <label>
-                    <span>Role</span>
-                    <select name="role" defaultValue="staff">
-                      <option value="admin">Admin</option>
-                      <option value="manager">Manager</option>
-                      <option value="product_manager">Product Manager</option>
-                      <option value="order_manager">Order Manager</option>
-                      <option value="staff">Staff</option>
-                    </select>
-                  </label>
-                </div>
-                <button className="button primary" type="submit">Create invitation</button>
-              </form>
+              <TeamInviteForm storeId={selected!.id} />
               <p className="checkout-note">Invitation links expire after 72 hours and contain a token hash only in the database.</p>
             </section>
 
