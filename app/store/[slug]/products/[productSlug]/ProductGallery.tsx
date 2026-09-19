@@ -22,7 +22,7 @@ export default function ProductGallery({
   const [active, setActive] = useState(first);
 
   const images = media
-    .filter((item) => Boolean(item.public_url))
+    .filter((item) => Boolean(item.public_url) && /\.(jpe?g|png|webp|avif)$/i.test(item.public_url ?? ""))
     .map((item) => ({
       id: item.id,
       url: item.public_url as string,
