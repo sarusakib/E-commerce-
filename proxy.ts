@@ -1,19 +1,34 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
-const PLATFORM_DOMAIN = (process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommercepremium.com").toLowerCase();
-const ROOT_HOSTS = new Set([PLATFORM_DOMAIN, `www.${PLATFORM_DOMAIN}`, "localhost", "127.0.0.1"]);
+const PLATFORM_DOMAIN = (
+  process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommerce-premium.vercel.app"
+).toLowerCase();
+
+const ROOT_HOSTS = new Set([
+  PLATFORM_DOMAIN,
+  "www." + PLATFORM_DOMAIN,
+  "localhost",
+  "127.0.0.1",
+]);
 
 function resolveStoreSlug(host: string) {
   const clean = host.split(":")[0].toLowerCase();
+
   if (ROOT_HOSTS.has(clean)) return null;
 
-  const suffix = `.${PLATFORM_DOMAIN}`;
+  if (clean.endsWith(".localhost")) {
+    const slug = clean.slice(0, -".localhost".length);
+    return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(slug) ? slug : null;
+  }
+
+  const suffix = "." + PLATFORM_DOMAIN;
   if (!clean.endsWith(suffix)) return null;
 
   const slug = clean.slice(0, -suffix.length);
   if (!slug || slug.includes(".")) return null;
-  return slug;
+
+  return /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(slug) ? slug : null;
 }
 
 export async function proxy(request: NextRequest) {
@@ -25,6 +40,7 @@ export async function proxy(request: NextRequest) {
     !slug ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
     pathname === "/favicon.ico" ||
     /\.[a-z0-9]+$/i.test(pathname)
   ) {
@@ -32,7 +48,8 @@ export async function proxy(request: NextRequest) {
   }
 
   const url = request.nextUrl.clone();
-  url.pathname = `/store/${slug}${pathname === "/" ? "" : pathname}`;
+  url.pathname = "/store/" + slug + (pathname === "/" ? "" : pathname);
+
   return NextResponse.rewrite(url, { headers: sessionResponse.headers });
 }
 
