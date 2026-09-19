@@ -42,7 +42,7 @@ export default async function StorePage({ params }: Props) {
           </Link>
           <div className="store-top-actions">
             <span>{store.default_currency}</span>
-            <Link href="/login" className="button">Account</Link>
+            <Link href={"/store/" + store.slug + "/cart"} className="button">Cart</Link>
           </div>
         </div>
       </header>
