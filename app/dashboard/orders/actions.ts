@@ -1,11 +1,15 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/supabase/database.types";
 
 type OrderActionState = {
   error?: string;
 };
 
-const ORDER_STATUSES = new Set([
+type OrderStatus = Database["public"]["Enums"]["order_status"];
+type PaymentStatus = Database["public"]["Enums"]["payment_status"];
+
+const ORDER_STATUSES = new Set<OrderStatus>([
   "pending",
   "confirmed",
   "processing",
@@ -16,7 +20,7 @@ const ORDER_STATUSES = new Set([
   "refunded",
 ]);
 
-const PAYMENT_STATUSES = new Set([
+const PAYMENT_STATUSES = new Set<PaymentStatus>([
   "unpaid",
   "pending",
   "paid",
@@ -24,6 +28,14 @@ const PAYMENT_STATUSES = new Set([
   "partially_refunded",
   "refunded",
 ]);
+
+function isOrderStatus(value: string): value is OrderStatus {
+  return ORDER_STATUSES.has(value as OrderStatus);
+}
+
+function isPaymentStatus(value: string): value is PaymentStatus {
+  return PAYMENT_STATUSES.has(value as PaymentStatus);
+}
 
 export async function updateOrderAction(
   _previous: OrderActionState,
@@ -40,7 +52,7 @@ export async function updateOrderAction(
   const paymentStatus = String(formData.get("payment_status") ?? "").trim();
   const trackingNumber = String(formData.get("tracking_number") ?? "").trim();
 
-  if (!orderId || !ORDER_STATUSES.has(status) || !PAYMENT_STATUSES.has(paymentStatus)) {
+  if (!orderId || !isOrderStatus(status) || !isPaymentStatus(paymentStatus)) {
     return { error: "Choose valid order and payment statuses." };
   }
 
