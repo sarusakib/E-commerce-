@@ -14,6 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          currency: string | null
+          event_name: string
+          id: number
+          metadata: Json
+          order_id: string | null
+          path: string
+          product_id: string | null
+          session_id: string
+          store_id: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          event_name: string
+          id?: never
+          metadata?: Json
+          order_id?: string | null
+          path?: string
+          product_id?: string | null
+          session_id: string
+          store_id: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          event_name?: string
+          id?: never
+          metadata?: Json
+          order_id?: string | null
+          path?: string
+          product_id?: string | null
+          session_id?: string
+          store_id?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_order_store_fk"
+            columns: ["store_id", "order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "analytics_events_product_store_fk"
+            columns: ["store_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "analytics_events_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -48,6 +112,127 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "audit_logs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          customer_id: string
+          discount_amount: number
+          id: string
+          order_id: string
+          store_id: string
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          customer_id: string
+          discount_amount: number
+          id?: string
+          order_id: string
+          store_id: string
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          customer_id?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_customer_store_fk"
+            columns: ["store_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_order_store_fk"
+            columns: ["store_id", "order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          max_discount: number | null
+          min_subtotal: number
+          per_customer_limit: number
+          starts_at: string | null
+          store_id: string
+          type: Database["public"]["Enums"]["coupon_type"]
+          updated_at: string
+          usage_count: number
+          usage_limit: number | null
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          max_discount?: number | null
+          min_subtotal?: number
+          per_customer_limit?: number
+          starts_at?: string | null
+          store_id: string
+          type: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          usage_count?: number
+          usage_limit?: number | null
+          value: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          max_discount?: number | null
+          min_subtotal?: number
+          per_customer_limit?: number
+          starts_at?: string | null
+          store_id?: string
+          type?: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          usage_count?: number
+          usage_limit?: number | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -212,6 +397,50 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          data: Json
+          id: string
+          read_at: string | null
+          store_id: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          store_id?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          read_at?: string | null
+          store_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           created_at: string
@@ -339,6 +568,7 @@ export type Database = {
           billing_address: Json
           checkout_id: string | null
           confirmation_token: string | null
+          coupon_code: string | null
           created_at: string
           currency: string
           customer_email: string
@@ -365,6 +595,7 @@ export type Database = {
           billing_address?: Json
           checkout_id?: string | null
           confirmation_token?: string | null
+          coupon_code?: string | null
           created_at?: string
           currency: string
           customer_email: string
@@ -391,6 +622,7 @@ export type Database = {
           billing_address?: Json
           checkout_id?: string | null
           confirmation_token?: string | null
+          coupon_code?: string | null
           created_at?: string
           currency?: string
           customer_email?: string
@@ -504,6 +736,86 @@ export type Database = {
           },
           {
             foreignKeyName: "product_images_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_reviews: {
+        Row: {
+          body: string
+          created_at: string
+          customer_id: string
+          id: string
+          media: Json
+          order_id: string
+          product_id: string
+          rating: number
+          seller_response: string | null
+          status: string
+          store_id: string
+          title: string
+          updated_at: string
+          verified_purchase: boolean
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          media?: Json
+          order_id: string
+          product_id: string
+          rating: number
+          seller_response?: string | null
+          status?: string
+          store_id: string
+          title?: string
+          updated_at?: string
+          verified_purchase?: boolean
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          media?: Json
+          order_id?: string
+          product_id?: string
+          rating?: number
+          seller_response?: string | null
+          status?: string
+          store_id?: string
+          title?: string
+          updated_at?: string
+          verified_purchase?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_customer_store_fk"
+            columns: ["store_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "product_reviews_order_store_fk"
+            columns: ["store_id", "order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "product_reviews_product_store_fk"
+            columns: ["store_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["store_id", "id"]
+          },
+          {
+            foreignKeyName: "product_reviews_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -723,21 +1035,71 @@ export type Database = {
           },
         ]
       }
+      store_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          created_by: string
+          email: string
+          expires_at: string
+          id: string
+          permissions: Json
+          role: Database["public"]["Enums"]["store_member_role"]
+          store_id: string
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          expires_at: string
+          id?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["store_member_role"]
+          store_id: string
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          permissions?: Json
+          role?: Database["public"]["Enums"]["store_member_role"]
+          store_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_invitations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_members: {
         Row: {
           created_at: string
+          permissions: Json
           role: Database["public"]["Enums"]["store_member_role"]
           store_id: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          permissions?: Json
           role?: Database["public"]["Enums"]["store_member_role"]
           store_id: string
           user_id: string
         }
         Update: {
           created_at?: string
+          permissions?: Json
           role?: Database["public"]["Enums"]["store_member_role"]
           store_id?: string
           user_id?: string
@@ -1048,7 +1410,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_guest_order: {
+      accept_store_invite: {
+        Args: { p_token: string; p_user_email: string; p_user_id: string }
+        Returns: Json
+      }
+      create_guest_order:
+        | {
+            Args: {
+              p_billing_address?: Json
+              p_customer: Json
+              p_idempotency_key: string
+              p_items: Json
+              p_shipping_address: Json
+              p_store_slug: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_billing_address?: Json
+              p_coupon_code?: string
+              p_customer: Json
+              p_idempotency_key: string
+              p_items: Json
+              p_shipping_address: Json
+              p_store_slug: string
+            }
+            Returns: Json
+          }
+      create_guest_order_base: {
         Args: {
           p_billing_address?: Json
           p_customer: Json
@@ -1062,6 +1452,7 @@ export type Database = {
       get_guest_order: { Args: { p_confirmation_token: string }; Returns: Json }
     }
     Enums: {
+      coupon_type: "percentage" | "fixed"
       order_status:
         | "pending"
         | "confirmed"
@@ -1080,7 +1471,13 @@ export type Database = {
         | "refunded"
       platform_role: "user" | "admin" | "support"
       product_status: "draft" | "active" | "archived"
-      store_member_role: "owner" | "admin" | "staff"
+      store_member_role:
+        | "owner"
+        | "admin"
+        | "staff"
+        | "manager"
+        | "product_manager"
+        | "order_manager"
       store_status: "draft" | "active" | "paused"
     }
     CompositeTypes: {
@@ -1209,6 +1606,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      coupon_type: ["percentage", "fixed"],
       order_status: [
         "pending",
         "confirmed",
@@ -1229,7 +1627,14 @@ export const Constants = {
       ],
       platform_role: ["user", "admin", "support"],
       product_status: ["draft", "active", "archived"],
-      store_member_role: ["owner", "admin", "staff"],
+      store_member_role: [
+        "owner",
+        "admin",
+        "staff",
+        "manager",
+        "product_manager",
+        "order_manager",
+      ],
       store_status: ["draft", "active", "paused"],
     },
   },
