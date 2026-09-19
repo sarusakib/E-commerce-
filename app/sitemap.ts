@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getProductUrl, getStoreUrl } from "@/lib/urls";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ecommerce-premium.vercel.app";
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const [{ data: stores }, { data: products }] = await Promise.all([
     supabase
