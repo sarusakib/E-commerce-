@@ -47,7 +47,7 @@ export async function createReviewAction(
 
   const { data: items } = await supabase
     .from("order_items")
-    .select("order_id,customer_id")
+    .select("order_id")
     .eq("store_id", storeId)
     .eq("product_id", productId)
     .in("order_id", orderIds)
