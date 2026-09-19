@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { getProductUrl, getStoreUrl } from "@/lib/urls";
+import AddToCartButton from "./AddToCartButton";
 import ShareProduct from "./ShareProduct";
 
 export const dynamic = "force-dynamic";
@@ -156,9 +157,18 @@ export default async function ProductPage({ params }: Props) {
               {product.sku && <span>SKU {product.sku}</span>}
             </div>
             <div className="actions">
-              <button className="button primary" type="button" disabled={product.stock <= 0}>
-                {product.stock > 0 ? "Add to cart" : "Currently unavailable"}
-              </button>
+              <AddToCartButton
+                storeSlug={store.slug}
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  slug: product.slug,
+                  price: product.price,
+                  currency: product.currency,
+                  stock: product.stock,
+                  primary_image_url: product.primary_image_url,
+                }}
+              />
               <ShareProduct title={product.name} />
             </div>
             <p className="share-note">Canonical product link ready for social previews and direct sharing.</p>
