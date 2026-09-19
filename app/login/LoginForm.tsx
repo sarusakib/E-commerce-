@@ -8,7 +8,7 @@ type Mode = "signin" | "signup" | "reset";
 
 const EMAIL_KEY = "ecommerce-premium.login.email";
 
-export default function LoginForm({ initialError = "" }: { initialError?: string }) {
+export default function LoginForm({ initialError = "", initialNext = "/dashboard" }: { initialError?: string; initialNext?: string }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
@@ -18,6 +18,11 @@ export default function LoginForm({ initialError = "" }: { initialError?: string
   const [busy, setBusy] = useState<"email" | "google" | "facebook" | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(initialError);
+
+  const nextPath =
+    initialNext.startsWith("/") && !initialNext.startsWith("//")
+      ? initialNext
+      : "/dashboard";
 
   useEffect(() => {
     try {
@@ -81,7 +86,7 @@ export default function LoginForm({ initialError = "" }: { initialError?: string
             data: {
               display_name: name.trim() || undefined,
             },
-            emailRedirectTo: window.location.origin + "/auth/callback?next=/dashboard",
+            emailRedirectTo: window.location.origin + "/auth/callback?next=" + encodeURIComponent(nextPath),
           },
         });
         if (signUpError) throw signUpError;
@@ -120,7 +125,7 @@ export default function LoginForm({ initialError = "" }: { initialError?: string
       const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + "/auth/callback?next=/dashboard",
+          redirectTo: window.location.origin + "/auth/callback?next=" + encodeURIComponent(nextPath),
         },
       });
 
