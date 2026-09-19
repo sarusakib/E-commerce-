@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
+import { createPublicClient } from "@/lib/supabase/public";
 
 const PLATFORM_DOMAIN = (
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommerce-premium.vercel.app"
@@ -34,7 +35,40 @@ function resolveStoreSlug(host: string) {
 export async function proxy(request: NextRequest) {
   const sessionResponse = await updateSession(request);
   const pathname = request.nextUrl.pathname;
-  const slug = resolveStoreSlug(request.headers.get("host") ?? "");
+  const host = request.headers.get("host") ?? "";
+  let slug = resolveStoreSlug(host);
+
+  if (!slug) {
+    const cleanHost = host.split(":")[0].toLowerCase();
+    if (
+      cleanHost &&
+      cleanHost !== "localhost" &&
+      cleanHost !== "127.0.0.1" &&
+      !cleanHost.endsWith(".localhost")
+    ) {
+      try {
+        const supabase = createPublicClient();
+        const { data: domain } = await supabase
+          .from("custom_domains")
+          .select("store_id")
+          .eq("hostname", cleanHost)
+          .eq("status", "active")
+          .maybeSingle();
+
+        if (domain?.store_id) {
+          const { data: store } = await supabase
+            .from("stores")
+            .select("slug")
+            .eq("id", domain.store_id)
+            .eq("status", "active")
+            .maybeSingle();
+          slug = store?.slug ?? null;
+        }
+      } catch {
+        // A custom-domain lookup must never break the core platform host.
+      }
+    }
+  }
 
   if (
     !slug ||
