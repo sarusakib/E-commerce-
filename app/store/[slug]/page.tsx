@@ -15,21 +15,20 @@ export default async function StorePage({ params }: Props) {
   const { slug } = await params;
   const supabase = createPublicClient();
 
-  const [{ data: store }, { data: publicSettings }] = await Promise.all([
-    supabase
-      .from("stores")
-      .select("id,name,slug,status,default_currency,locale,timezone,description,logo_url,cover_image_url,country_code")
-      .eq("slug", slug.toLowerCase())
-      .eq("status", "active")
-      .maybeSingle(),
-    supabase
-      .from("store_public_settings")
-      .select("theme,homepage,announcement")
-      .eq("store_id", store.id)
-      .maybeSingle(),
-  ]);
+  const { data: store } = await supabase
+    .from("stores")
+    .select("id,name,slug,status,default_currency,locale,timezone,description,logo_url,cover_image_url,country_code")
+    .eq("slug", slug.toLowerCase())
+    .eq("status", "active")
+    .maybeSingle();
 
   if (!store) notFound();
+
+  const { data: publicSettings } = await supabase
+    .from("store_public_settings")
+    .select("theme,homepage,announcement")
+    .eq("store_id", store.id)
+    .maybeSingle();
 
   const theme = publicSettings?.theme && typeof publicSettings.theme === "object"
     ? publicSettings.theme as Record<string, unknown>
