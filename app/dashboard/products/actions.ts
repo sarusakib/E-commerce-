@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export type ProductActionState = {
-  error?: string;
-};
+import type { ProductActionState } from "./types";
 
 const PRODUCT_STATUSES = new Set(["draft", "active", "archived"]);
 
