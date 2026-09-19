@@ -121,9 +121,9 @@ export default function CartClient({
           <strong>{currency} {total.toFixed(2)}</strong>
         </div>
         <p>Shipping, taxes, discounts and payment are calculated securely during checkout.</p>
-        <button className="button primary" type="button" disabled>
-          Checkout coming next
-        </button>
+        <Link className="button primary" href={"/store/" + storeSlug + "/checkout"}>
+          Continue to checkout
+        </Link>
       </aside>
     </section>
   );
