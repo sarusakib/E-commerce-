@@ -30,7 +30,8 @@ create table public.customers (
   last_name text not null default '',
   phone text not null default '',
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  constraint customers_store_id_id_uq unique (store_id, id)
 );
 
 create unique index customers_store_email_uq
@@ -91,7 +92,8 @@ create table public.orders (
   constraint orders_customer_store_fk
     foreign key (store_id, customer_id)
     references public.customers(store_id, id)
-    on delete set null
+    on delete set null,
+  constraint orders_store_id_id_uq unique (store_id, id)
 );
 
 create unique index orders_store_order_number_uq on public.orders(store_id, order_number);
