@@ -187,7 +187,7 @@ export default async function ProductPage({ params }: Props) {
                 }}
                 variants={result.variants}
               />
-              <ShareProduct title={product.name} />
+              <ShareProduct title={product.name} url={canonical} />
             </div>
             <p className="share-note">Canonical product link ready for social previews and direct sharing.</p>
           </div>
