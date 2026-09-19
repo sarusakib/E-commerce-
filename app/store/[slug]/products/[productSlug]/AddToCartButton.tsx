@@ -102,7 +102,7 @@ export default function AddToCartButton({
           }}>
             {variants.map((variant) => (
               <option key={variant.id} value={variant.id} disabled={variant.stock <= 0}>
-                {variant.title} · {variant.currency ?? ""} {Number(variant.price).toFixed(2)}
+                {variant.title} · {product.currency} {Number(variant.price).toFixed(2)}
                 {variant.stock <= 0 ? " · Out of stock" : ""}
               </option>
             ))}
