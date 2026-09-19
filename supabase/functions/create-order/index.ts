@@ -53,11 +53,23 @@ Deno.serve(async (request) => {
   if (!adminKey()) return json({ error: 'Checkout service is not configured.' }, 503);
   if (!allowedMethodLimit(request)) return json({ error: 'Too many checkout attempts. Try again shortly.' }, 429);
 
+  const secret = adminKey();
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
-    adminKey(),
+    secret,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
+
+  const publishableJson = Deno.env.get('SUPABASE_PUBLISHABLE_KEYS');
+  let publishableKey = '';
+  if (publishableJson) {
+    try {
+      publishableKey = (JSON.parse(publishableJson) as Record<string, string>).default ?? '';
+    } catch {
+      // Fall back to legacy anon key.
+    }
+  }
+  publishableKey ||= Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
   try {
     if (request.method === 'GET') {
@@ -78,9 +90,27 @@ Deno.serve(async (request) => {
     if (length > 65_536) return json({ error: 'Checkout request is too large.' }, 413);
 
     const body = await request.json() as Record<string, unknown>;
+    const authHeader = request.headers.get('authorization');
+    let verifiedUserId = '';
+    let verifiedUserEmail = '';
+
+    if (authHeader?.startsWith('Bearer ') && publishableKey) {
+      const token = authHeader.slice(7).trim();
+      const userClient = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        publishableKey,
+        { auth: { persistSession: false, autoRefreshToken: false } },
+      );
+      const { data: userData, error: userError } = await userClient.auth.getUser(token);
+      if (userError || !userData.user) return json({ error: 'Invalid customer session.' }, 401);
+      verifiedUserId = userData.user.id;
+      verifiedUserEmail = userData.user.email?.toLowerCase() ?? '';
+    }
     const storeSlug = typeof body.store_slug === 'string' ? body.store_slug.trim().toLowerCase() : '';
     const idempotencyKey = typeof body.idempotency_key === 'string' ? body.idempotency_key.trim() : '';
-    const customer = body.customer && typeof body.customer === 'object' ? body.customer : null;
+    const customer = body.customer && typeof body.customer === 'object'
+      ? { ...(body.customer as Record<string, unknown>) }
+      : null;
     const items = Array.isArray(body.items) ? body.items : null;
     const shipping = body.shipping_address && typeof body.shipping_address === 'object' ? body.shipping_address : null;
     const billing = body.billing_address && typeof body.billing_address === 'object' ? body.billing_address : {};
@@ -98,6 +128,10 @@ Deno.serve(async (request) => {
     if (!origin) return json({ error: 'Checkout origin required.' }, 403);
     if (!/^[A-Za-z0-9_-]{16,120}$/.test(idempotencyKey)) return json({ error: 'Invalid checkout request.' }, 400);
     if (!customer || !items || items.length < 1 || items.length > 50 || !shipping) return json({ error: 'Incomplete checkout data.' }, 400);
+    if (verifiedUserId) {
+      customer.auth_user_id = verifiedUserId;
+      if (verifiedUserEmail) customer.email = verifiedUserEmail;
+    }
 
     const sanitizedItems = items.map((item) => {
       if (!item || typeof item !== 'object') throw new Error('Invalid item');
