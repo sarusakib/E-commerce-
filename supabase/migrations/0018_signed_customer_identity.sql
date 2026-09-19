@@ -14,6 +14,7 @@ as $$
 declare
   v_store public.stores%rowtype;
   v_customer_id uuid;
+  v_auth_user_id uuid;
   v_order_id uuid;
   v_order_number text;
   v_confirmation_token text;
@@ -332,7 +333,7 @@ begin
     'order_number', v_order_number,
     'confirmation_token', v_confirmation_token,
     'currency', v_currency,
-    'grand_total', v_subtotal
+    'grand_total', v_subtotal + v_shipping_total + case when v_tax_inclusive then 0 else v_tax_total end
   );
 end;
 $$;
