@@ -116,7 +116,7 @@ export default async function DeveloperPage({
                 </article>
               ))}
               {!endpoints?.length && <p className="checkout-note">No webhook endpoints yet.</p>}
-            </section>            </section>
+            </section>
           </>
         )}
       </div>
