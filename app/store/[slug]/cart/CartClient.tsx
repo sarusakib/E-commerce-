@@ -6,7 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 
 type CartItem = {
   productId: string;
+  variantId: string | null;
   name: string;
+  variantTitle?: string;
   slug: string;
   price: number;
   currency: string;
@@ -98,6 +100,7 @@ export default function CartClient({
             <div className="cart-item-copy">
               <Link href={"/store/" + storeSlug + "/products/" + item.slug}>
                 <h2>{item.name}</h2>
+                {item.variantTitle && <small className="cart-variant">{item.variantTitle}</small>}
               </Link>
               <span>{item.currency || currency} {item.price.toFixed(2)}</span>
               <div className="cart-controls">
