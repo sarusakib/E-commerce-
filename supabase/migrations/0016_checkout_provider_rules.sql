@@ -1,4 +1,6 @@
--- E-Commerce Premium: data-driven checkout provider, shipping and tax rules.\n\ncreate or replace function public.create_guest_order(
+-- E-Commerce Premium: data-driven checkout provider, shipping and tax rules.
+
+create or replace function public.create_guest_order(
   p_store_slug text,
   p_idempotency_key text,
   p_customer jsonb,
