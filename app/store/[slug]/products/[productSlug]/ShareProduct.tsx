@@ -2,21 +2,27 @@
 
 import { useState } from "react";
 
-export default function ShareProduct({ title }: { title: string }) {
+export default function ShareProduct({
+  title,
+  url,
+}: {
+  title: string;
+  url: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function share() {
-    const url = window.location.href;
     try {
       if (navigator.share) {
         await navigator.share({ title, url, text: title });
         return;
       }
+
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
+      window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      // User cancellation is not an error that needs to be surfaced.
+      // Sharing can be cancelled by the user; no error UI is needed.
     }
   }
 
