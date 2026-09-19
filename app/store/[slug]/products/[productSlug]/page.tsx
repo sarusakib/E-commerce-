@@ -5,6 +5,7 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { getProductUrl, getStoreUrl } from "@/lib/urls";
 import AddToCartButton from "./AddToCartButton";
 import ProductGallery from "./ProductGallery";
+import ProductViewTracker from "./ProductViewTracker";
 import ShareProduct from "./ShareProduct";
 
 export const dynamic = "force-dynamic";
@@ -136,6 +137,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <main className="shell product-detail-shell">
+      <ProductViewTracker storeSlug={store.slug} productId={product.id} />
       <div className="page">
         <header className="nav">
           <Link href={getStoreUrl(store.slug)} className="brand">
