@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { getProductUrl, getStoreUrl } from "@/lib/urls";
 import AddToCartButton from "./AddToCartButton";
+import ProductGallery from "./ProductGallery";
 import ShareProduct from "./ShareProduct";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,22 @@ async function getProduct(slug: string, productSlug: string) {
 
   if (!product) return null;
 
-  return { store, product };
+  const [{ data: variants }, { data: media }] = await Promise.all([
+    supabase
+      .from("product_variants")
+      .select("id,title,price,stock,sku,image_url")
+      .eq("store_id", store.id)
+      .eq("product_id", product.id)
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("product_images")
+      .select("id,public_url,alt_text,is_primary")
+      .eq("store_id", store.id)
+      .eq("product_id", product.id)
+      .order("sort_order", { ascending: true }),
+  ]);
+
+  return { store, product, variants: variants ?? [], media: media ?? [] };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -132,15 +148,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
 
         <section className="product-detail">
-          <div className="product-detail-image">
-            <Image
-              src={image}
-              alt={product.name}
-              fill
-              sizes="(max-width: 760px) 100vw, 55vw"
-              priority
-            />
-          </div>
+          <ProductGallery name={product.name} fallback={image} media={result.media} />
 
           <div className="product-detail-copy">
             <div className="kicker">{product.brand || product.category || "Product"}</div>
@@ -168,6 +176,7 @@ export default async function ProductPage({ params }: Props) {
                   stock: product.stock,
                   primary_image_url: product.primary_image_url,
                 }}
+                variants={result.variants}
               />
               <ShareProduct title={product.name} />
             </div>
