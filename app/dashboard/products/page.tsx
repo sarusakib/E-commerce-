@@ -41,7 +41,7 @@ export default async function DashboardProductsPage({ searchParams }: Props) {
   const products = selectedStore
     ? (await supabase
         .from("products")
-        .select("id,name,slug,brand,category,price,currency,stock,status,featured,updated_at")
+        .select("id,name,slug,sku,brand,category,price,currency,stock,status,featured,updated_at")
         .eq("store_id", selectedStore.id)
         .order("updated_at", { ascending: false })
       ).data
