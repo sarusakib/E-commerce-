@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getProductUrl, getStoreUrl } from "@/lib/urls";
 import ShareProduct from "./ShareProduct";
 
@@ -13,7 +13,7 @@ type Props = {
 };
 
 async function getProduct(slug: string, productSlug: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: store } = await supabase
     .from("stores")
