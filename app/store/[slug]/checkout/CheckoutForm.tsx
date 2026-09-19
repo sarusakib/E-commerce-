@@ -93,6 +93,7 @@ export default function CheckoutForm({
           },
           items: items.map((item) => ({
             product_id: item.productId,
+            variant_id: item.variantId,
             quantity: item.quantity,
           })),
           shipping_address: {
