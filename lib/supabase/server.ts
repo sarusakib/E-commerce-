@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { Database } from "./database.types";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -10,7 +11,7 @@ export async function createClient() {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
   }
 
-  return createServerClient(url, key, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -21,8 +22,8 @@ export async function createClient() {
             cookieStore.set(name, value, options);
           }
         } catch {
-          // Server Components cannot always mutate response cookies.
-          // Proxy refreshes and persists the refreshed session.
+          // Server Components may not mutate response cookies.
+          // Proxy persists refreshed session cookies.
         }
       },
     },
