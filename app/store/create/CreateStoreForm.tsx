@@ -7,6 +7,7 @@ const initialState: CreateStoreState = {};
 
 export default function CreateStoreForm() {
   const [state, action, pending] = useActionState(createStoreAction, initialState);
+  const platformDomain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommerce-premium.vercel.app";
 
   return (
     <form action={action} className="store-form">
@@ -43,6 +44,17 @@ export default function CreateStoreForm() {
         </label>
 
         <label>
+          <span>Country</span>
+          <select name="country_code" defaultValue="BD">
+            <option value="BD">Bangladesh</option>
+            <option value="IN">India</option>
+            <option value="AE">United Arab Emirates</option>
+            <option value="GB">United Kingdom</option>
+            <option value="US">United States</option>
+          </select>
+        </label>
+
+        <label>
           <span>Timezone</span>
           <select name="timezone" defaultValue="Asia/Dhaka">
             <option value="Asia/Dhaka">Asia/Dhaka</option>
@@ -56,8 +68,8 @@ export default function CreateStoreForm() {
       </div>
 
       <div className="domain-preview">
-        <span>Store URL</span>
-        <strong><span>your-slug</span>.{process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "ecommerce-premium.vercel.app"}</strong>
+        <span>Your future public URL</span>
+        <strong><span>your-slug</span>.{platformDomain}</strong>
       </div>
 
       {state.error && <div className="alert error" role="alert">{state.error}</div>}
