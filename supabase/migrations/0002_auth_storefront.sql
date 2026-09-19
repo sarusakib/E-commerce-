@@ -273,12 +273,12 @@ using (
 -- storefront/product data, not auth ownership identifiers.
 create policy "stores_public_active"
 on public.stores for select
-to anon
+to anon, authenticated
 using (status = 'active');
 
 create policy "products_public_active"
 on public.products for select
-to anon
+to anon, authenticated
 using (
   status = 'active'
   and exists (
