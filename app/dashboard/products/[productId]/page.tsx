@@ -42,7 +42,10 @@ export default async function EditProductPage({
             <span className="brand-mark">EP</span>
             <span>{store.name}</span>
           </Link>
-          <Link href={"/store/" + store.slug + "/products/" + product.slug} className="button">Preview product</Link>
+          <div className="nav-actions">
+            <Link href={"/dashboard/products/" + product.id + "/variants"} className="button">Variants</Link>
+            <Link href={"/store/" + store.slug + "/products/" + product.slug} className="button">Preview product</Link>
+          </div>
         </header>
 
         <section className="form-hero">
