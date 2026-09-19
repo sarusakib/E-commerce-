@@ -1,9 +1,12 @@
 -- E-Commerce Premium: variant and media foundation.
 
+alter table public.products
+  add constraint products_store_id_id_uq unique (store_id, id);
+
 create table public.product_variants (
   id uuid primary key default gen_random_uuid(),
   store_id uuid not null references public.stores(id) on delete cascade,
-  product_id uuid not null references public.products(id) on delete cascade,
+  product_id uuid not null,
   title text not null,
   sku text,
   barcode text,
@@ -16,7 +19,11 @@ create table public.product_variants (
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (store_id, product_id, id)
+  unique (store_id, product_id, id),
+  constraint product_variants_product_store_fk
+    foreign key (store_id, product_id)
+    references public.products(store_id, id)
+    on delete cascade
 );
 
 create unique index product_variants_store_sku_uq
@@ -28,7 +35,7 @@ create index product_variants_store_id_idx on public.product_variants(store_id);
 create table public.product_images (
   id uuid primary key default gen_random_uuid(),
   store_id uuid not null references public.stores(id) on delete cascade,
-  product_id uuid not null references public.products(id) on delete cascade,
+  product_id uuid not null,
   storage_path text,
   public_url text,
   alt_text text not null default '',
@@ -37,7 +44,11 @@ create table public.product_images (
   width integer check (width is null or width > 0),
   height integer check (height is null or height > 0),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  constraint product_images_product_store_fk
+    foreign key (store_id, product_id)
+    references public.products(store_id, id)
+    on delete cascade
 );
 
 create index product_images_product_id_idx on public.product_images(product_id, sort_order);
