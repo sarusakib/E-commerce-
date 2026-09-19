@@ -12,9 +12,9 @@ export default async function AccountPage() {
 
   const { data: customerRows } = await supabase
     .from("customers")
-    .select("id,store_id,email,first_name,last_name,phone,created_at,last_order_at")
+    .select("id,store_id,email,first_name,last_name,phone,created_at")
     .eq("auth_user_id", auth.user.id)
-    .order("last_order_at", { ascending: false });
+    .order("created_at", { ascending: false });
 
   const storeIds = (customerRows ?? []).map((row) => row.store_id);
   const { data: stores } = storeIds.length
