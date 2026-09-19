@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 
 type OrderActionState = {
   error?: string;
