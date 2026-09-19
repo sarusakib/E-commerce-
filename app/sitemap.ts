@@ -27,16 +27,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const storeMap = new Map((stores ?? []).map((store) => [store.id, store.slug]));
-  const productUrls: MetadataRoute.Sitemap = (products ?? [])
-    .map((product) => {
-      const storeSlug = storeMap.get(product.store_id);
-      if (!storeSlug) return null;
-      return {
-        url: getProductUrl(storeSlug, product.slug),
-        lastModified: product.updated_at,
-      };
-    })
-    .filter((item): item is MetadataRoute.Sitemap[number] => item !== null);
+  const productUrls = (products ?? []).flatMap((product) => {
+    const storeSlug = storeMap.get(product.store_id);
+    if (!storeSlug) return [];
+    return [{
+      url: getProductUrl(storeSlug, product.slug),
+      lastModified: product.updated_at,
+    }];
+  });
 
   return [
     { url: siteUrl, lastModified: new Date() },
