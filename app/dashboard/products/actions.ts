@@ -2,8 +2,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 import type { ProductActionState } from "./types";
+import type { Database } from "@/lib/supabase/database.types";
 
-const PRODUCT_STATUSES = new Set(["draft", "active", "archived"]);
+type ProductStatus = Database["public"]["Enums"]["product_status"];
+const PRODUCT_STATUSES = new Set<ProductStatus>(["draft", "active", "archived"]);
+
+function isProductStatus(value: string): value is ProductStatus {
+  return PRODUCT_STATUSES.has(value as ProductStatus);
+}
 
 function slugify(value: string) {
   return value
@@ -60,7 +66,7 @@ function readProduct(formData: FormData) {
     return { error: "Enter a valid stock quantity." };
   }
 
-  if (!PRODUCT_STATUSES.has(status)) {
+  if (!isProductStatus(status)) {
     return { error: "Choose a valid product status." };
   }
 
