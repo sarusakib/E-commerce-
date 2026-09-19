@@ -25,6 +25,7 @@ export default async function StorePage({ params }: Props) {
     supabase
       .from("store_public_settings")
       .select("theme,homepage,announcement")
+      .eq("store_id", store.id)
       .maybeSingle(),
   ]);
 
