@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 type Variant = {
   id: string;
@@ -84,6 +85,14 @@ export default function AddToCartButton({
       }
 
       window.localStorage.setItem(key, JSON.stringify(existing));
+      void trackEvent({
+        storeSlug,
+        productId: product.id,
+        eventName: "add_to_cart",
+        value: price * Math.min(quantity, stock),
+        currency: product.currency,
+        metadata: { variant_id: selected?.id ?? null, quantity: Math.min(quantity, stock) },
+      });
       setAdded(true);
       window.setTimeout(() => setAdded(false), 1800);
     } catch {
