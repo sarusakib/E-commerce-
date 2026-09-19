@@ -9,6 +9,11 @@ const corsHeaders = {
 
 const buckets = new Map<string, { started: number; count: number }>();
 
+const platformDomain = (
+  Deno.env.get("ECOMMERCE_PLATFORM_DOMAIN") ||
+  "ecommerce-premium.vercel.app"
+).toLowerCase();
+
 function adminKey() {
   const secretJson = Deno.env.get('SUPABASE_SECRET_KEYS');
   if (secretJson) {
@@ -81,6 +86,16 @@ Deno.serve(async (request) => {
     const billing = body.billing_address && typeof body.billing_address === 'object' ? body.billing_address : {};
 
     if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(storeSlug)) return json({ error: 'Invalid store.' }, 400);
+
+    const origin = request.headers.get('origin');
+    const allowedOrigins = new Set([
+      "https://" + storeSlug + "." + platformDomain,
+      "https://" + platformDomain,
+      "http://localhost:3000",
+      "http://" + storeSlug + ".localhost:3000",
+    ]);
+    if (origin && !allowedOrigins.has(origin)) return json({ error: 'Invalid checkout origin.' }, 403);
+    if (!origin) return json({ error: 'Checkout origin required.' }, 403);
     if (!/^[A-Za-z0-9_-]{16,120}$/.test(idempotencyKey)) return json({ error: 'Invalid checkout request.' }, 400);
     if (!customer || !items || items.length < 1 || items.length > 50 || !shipping) return json({ error: 'Incomplete checkout data.' }, 400);
 
