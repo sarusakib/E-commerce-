@@ -31,14 +31,12 @@ declare
   v_order_number text;
   v_confirmation_token text;
   v_email text;
-  v_name text;
   v_first_name text;
   v_last_name text;
   v_phone text;
   v_country_code text;
   v_currency text;
   v_subtotal numeric(18,2) := 0;
-  v_item_count integer := 0;
   v_item jsonb;
   v_resolved_items jsonb := '[]'::jsonb;
   v_product_id uuid;
@@ -150,7 +148,6 @@ begin
 
   for v_item in select * from jsonb_array_elements(p_items)
   loop
-    v_item_count := v_item_count + 1;
     v_product_id := nullif(v_item->>'product_id', '')::uuid;
     v_variant_id := nullif(v_item->>'variant_id', '')::uuid;
     v_quantity := (v_item->>'quantity')::integer;
@@ -221,7 +218,6 @@ begin
     ));
   end loop;
 
-  v_name := nullif(trim(concat_ws(' ', v_first_name, v_last_name)), '');
   v_order_number := 'EP-' || to_char(now(), 'YYYYMMDD') || '-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
   v_confirmation_token := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
 
