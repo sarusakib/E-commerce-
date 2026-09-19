@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -80,7 +81,12 @@ export default async function StorePage({ params }: Props) {
               >
                 <div className="product-image">
                   {product.primary_image_url ? (
-                    <img src={product.primary_image_url} alt="" loading="lazy" />
+                    <Image
+                      src={product.primary_image_url}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 760px) 50vw, 25vw"
+                    />
                   ) : (
                     <span>EP</span>
                   )}
