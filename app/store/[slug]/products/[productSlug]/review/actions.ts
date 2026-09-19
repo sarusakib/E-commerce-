@@ -56,9 +56,7 @@ export async function createReviewAction(
   const purchased = items?.[0];
   if (!purchased) return { error: "This product is not part of a delivered order on your account." };
 
-  const customerId = purchased.customer_id
-    ? purchased.customer_id
-    : customerIds[0];
+  const customerId = customerIds[0];
 
   const { error } = await supabase.from("product_reviews").insert({
     store_id: storeId,
