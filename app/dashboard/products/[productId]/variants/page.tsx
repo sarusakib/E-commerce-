@@ -76,7 +76,20 @@ export default async function VariantsPage({
                   <button className="button danger-button" type="submit">Delete</button>
                 </form>
               </div>
-              <VariantForm storeId={store.id} productId={product.id} variant={variant} action={updateVariantAction} />
+              <VariantForm
+                storeId={store.id}
+                productId={product.id}
+                variant={{
+                  ...variant,
+                  option_values:
+                    variant.option_values &&
+                    typeof variant.option_values === "object" &&
+                    !Array.isArray(variant.option_values)
+                      ? variant.option_values as Record<string, unknown>
+                      : {},
+                }}
+                action={updateVariantAction}
+              />
             </article>
           ))}
           {!variants?.length && <section className="empty-card"><p>No variants yet. Add size/color/material combinations above.</p></section>}
