@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import CheckoutForm from "./CheckoutForm";
+import CheckoutTracker from "./CheckoutTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function CheckoutPage({
 
   return (
     <main className="storefront-shell">
+      <CheckoutTracker storeSlug={store.slug} />
       <div className="page">
         <header className="nav">
           <Link href={"/store/" + store.slug} className="brand">
