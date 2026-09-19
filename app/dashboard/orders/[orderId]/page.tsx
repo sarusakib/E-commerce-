@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { updateOrderAction } from "../actions";
+import OrderStatusForm from "../OrderStatusForm";
 
 export const dynamic = "force-dynamic";
 
-const statusOptions = ["pending","confirmed","processing","shipped","delivered","cancelled","returned","refunded"];
-const paymentOptions = ["unpaid","pending","paid","failed","partially_refunded","refunded"];
 
 export default async function OrderDetailPage({
   params,
@@ -80,26 +78,14 @@ export default async function OrderDetailPage({
         <section className="order-detail-grid">
           <div className="store-form">
             <div className="form-section-title">Order status</div>
-            <form action={updateOrderAction} className="auth-form">
-              <input type="hidden" name="order_id" value={order.id} />
-              <label>
-                <span>Fulfillment status</span>
-                <select name="status" defaultValue={order.status}>
-                  {statusOptions.map((status) => <option value={status} key={status}>{status}</option>)}
-                </select>
-              </label>
-              <label>
-                <span>Payment status</span>
-                <select name="payment_status" defaultValue={order.payment_status}>
-                  {paymentOptions.map((status) => <option value={status} key={status}>{status.replace("_", " ")}</option>)}
-                </select>
-              </label>
-              <label>
-                <span>Tracking number</span>
-                <input name="tracking_number" defaultValue={order.tracking_number ?? ""} maxLength={120} />
-              </label>
-              <button className="button primary auth-submit" type="submit">Save order</button>
-            </form>
+            <OrderStatusForm
+              order={{
+                id: order.id,
+                status: order.status,
+                payment_status: order.payment_status,
+                tracking_number: order.tracking_number,
+              }}
+            />
           </div>
 
           <div className="store-form">
