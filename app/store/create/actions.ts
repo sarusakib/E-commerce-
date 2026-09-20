@@ -30,7 +30,6 @@ export async function createStoreAction(
   _previous: CreateStoreState,
   formData: FormData,
 ): Promise<CreateStoreState> {
-  "use server";
 
   const supabase = await createClient();
   const { data: userData, error: userError } = await supabase.auth.getUser();
