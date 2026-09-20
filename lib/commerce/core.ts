@@ -1,3 +1,5 @@
+import { getFreeFirstStatus, isFreeFirstMode } from "@/lib/commerce/free-mode";
+
 export type PaymentIntentInput = { amount:number; currency:string; orderId:string; customerEmail?:string };
 export type PaymentProvider = {
   code:string; displayName:string;
@@ -64,11 +66,20 @@ export const COMMERCE_MODULES:{key:string;title:string;status:ModuleStatus;detai
   {key:"support",title:"Support",status:"foundation",detail:"Ownership-safe ticket schema."},
   {key:"experiments",title:"A/B testing",status:"foundation",detail:"Experiment allocation schema."},
   {key:"pwa",title:"PWA/offline",status:"live",detail:"Manifest and offline fallback."},
-  {key:"ai",title:"AI commerce",status:"external",detail:"Provider configuration is still required."},
-  {key:"3d",title:"AI 3D pipeline",status:"external",detail:"Python reconstruction worker is external."},
-  {key:"ar",title:"AR viewer",status:"external",detail:"Consumes optimized GLB assets when available."},
-  {key:"chat",title:"Customer chat",status:"external",detail:"Provider integration is intentionally not hard-wired."},
+  {key:"ai",title:"AI commerce",status:"external",detail:"Free-first provider path prepared; credentials are still required."},
+  {key:"3d",title:"AI 3D pipeline",status:"external",detail:"Free-first Python worker path prepared; worker hosting/compute is external."},
+  {key:"ar",title:"AR viewer",status:"external",detail:"Free-first Three.js + AR.js path; optimized GLB assets are required."},
+  {key:"chat",title:"Customer chat",status:"external",detail:"Free-first Supabase Realtime path prepared."},
 ];
 
-export function getCommerceAiStatus(){const provider=process.env.COMMERCE_AI_PROVIDER?.trim()||null;return {configured:Boolean(provider),provider};}
-export function getThreeDWorkerStatus(){const workerUrl=process.env.THREED_WORKER_URL?.trim()||null;return {configured:Boolean(workerUrl),workerUrl};}
+export function getCommerceAiStatus(){
+  const provider=process.env.COMMERCE_AI_PROVIDER?.trim()||null;
+  return {configured:Boolean(provider),provider,freeFirst:isFreeFirstMode()};
+}
+
+export function getThreeDWorkerStatus(){
+  const workerUrl=process.env.THREED_WORKER_URL?.trim()||null;
+  return {configured:Boolean(workerUrl),workerUrl,freeFirst:isFreeFirstMode()};
+}
+
+export { getFreeFirstStatus };
